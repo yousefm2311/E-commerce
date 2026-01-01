@@ -1,18 +1,21 @@
+//  Import required modules
 const express = require("express");
+// Load environment variables from .env file
 const dotenv = require("dotenv");
+// HTTP request logger middleware
 const morgan = require("morgan");
-const mongoose = require("mongoose");
-dotenv.config({ path: "config.env" });
+
+// Import routes and database connection
+const categoryRoute = require("./routes/category.route.js");
+
+// Database connection module 
+const dbConnnection = require("./config/database");
+
+// Load environment variables
+dotenv.config({ path: ".env" });
 
 // MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then((conn) => {
-    console.log(`Connected to MongoDB successfully ${conn.connection.host}`);
-  })
-  .catch((err) => {
-    console.log("Error connecting to MongoDB:", err);
-  });
+dbConnnection();
 
 /// Express app setup
 const app = express();
@@ -24,33 +27,10 @@ if (process.env.NODE_ENV === "development") {
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// 1- Define Mongoose Schemas
-const categorySchema = new mongoose.Schema({
-  name: String,
-});
-// 2- Create Mongoose Models
-const categoryModel = mongoose.model("Category", categorySchema);
+
 
 // routes
-
-app.post("/", async (req, res) => {
-  const name = req.body.name;
-  console.log(name);
-  const category = new categoryModel({ name });
-  await category
-    .save()
-    .then((doc) => {
-      console.log("Category saved");
-      res.json(doc);
-    })
-    .catch((err) => {
-      console.log("Error saving category:", err);
-    });
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+app.use("/api/v1/category", categoryRoute);
 
 // Start the server
 const PORT = process.env.POST || 8000;
