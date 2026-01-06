@@ -31,7 +31,15 @@ app.use(express.json());
 
 // routes
 app.use("/api/v1/category", categoryRoute);
+app.all(/.*/, (req, res, next) => {
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  next(err.message);
+});
 
+
+app.use((err, req, res, next) => {
+  res.status(400).json({error: err});
+});
 // Start the server
 const PORT = process.env.POST || 8000;
 app.listen(PORT, () => {
