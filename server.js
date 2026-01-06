@@ -4,16 +4,16 @@ const express = require("express");
 const dotenv = require("dotenv");
 // HTTP request logger middleware
 const morgan = require("morgan");
-
 // Import routes and database connection
 const categoryRoute = require("./routes/category.route.js");
-
+const ApiError = require("./utils/apiErrors.js");
 // Database connection module 
 const dbConnnection = require("./config/database");
 
+// Import global error handling middleware
+const globalError = require("./middlewares/errorMiddleware.js");
 // Load environment variables
 dotenv.config({ path: ".env" });
-
 // MongoDB connection
 dbConnnection();
 
@@ -32,16 +32,24 @@ app.use(express.json());
 // routes
 app.use("/api/v1/category", categoryRoute);
 app.all(/.*/, (req, res, next) => {
-  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  next(err.message);
+  // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  next(new ApiError(`Can't find ${req.originalUrl} on this server!`, 400));
 });
 
 
-app.use((err, req, res, next) => {
-  res.status(400).json({error: err});
-});
+app.use(globalError);
 // Start the server
 const PORT = process.env.POST || 8000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+
+// Handle unhandled promise rejections globally
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled Rejection Error :", err);
+  server.close(() => {
+    console.log("Shutting down....");
+    process.exit(1);
+  });
 });

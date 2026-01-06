@@ -8,9 +8,9 @@ const dbConnnection = () => {
     .then((conn) => {
       console.log(`Connected to MongoDB successfully ${conn.connection.host}`);
     })
-    .catch((err) => {
-      console.log("Error connecting to MongoDB:", err);
-    });
+    // .catch((err) => {
+    //   
+    // });
 };
 
 
