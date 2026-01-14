@@ -49,13 +49,14 @@ exports.createSubCategory = asyncHandler(async (req, res) => {
 // @access                Private/Admin
 exports.updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name ,category} = req.body;
 
   const subcategory = await SubCategory.findByIdAndUpdate(
     { _id: id },
     {
       name,
       slug: slugify(name),
+      category
     },
     { new: true }
   );
