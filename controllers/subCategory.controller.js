@@ -11,10 +11,14 @@ exports.getSubCategory = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const subcategory = await SubCategory.find({})
+
+  let filterObject = {};
+  if(req.params.categoryId) filterObject = {category:req.params.categoryId};
+
+  const subcategory = await SubCategory.find(filterObject)
     .skip(skip)
-    .limit(limit)
-    .populate({path:"category",select:"name -_id"});
+    .limit(limit);
+    // .populate({ path: "category", select: "name -_id" });
   res
     .status(200)
     .json({ page: page, result: subcategory.length, data: subcategory });
@@ -41,6 +45,8 @@ exports.getSingleSubCategory = asyncHandler(async (req, res, next) => {
 // @route               POST /api/v1/SubCategory
 // @access              Private/Admin
 exports.createSubCategory = asyncHandler(async (req, res) => {
+
+  if(!req.body.category) req.body.category = req.params.categoryId;
   const { name, category } = req.body;
   const subcategory = await SubCategory.create({
     name,

@@ -13,7 +13,11 @@ const {
   deleteCategory,
 } = require("../controllers/category.controller");
 
+const subCategoryRoute = require('./subCategory.route')
+
 const router = express.Router();
+
+router.use("/:categoryId/subcategory",subCategoryRoute);
 
 router
   .route("/")
