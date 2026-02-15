@@ -5,6 +5,7 @@ const {
   getSingleSubCategory,
   updateSubCategory,
   deleteSubCategory,
+  setCategoryIdInBody
 } = require("../controllers/subCategory.controller");
 const {
   createSubCategoryValidation,
@@ -17,7 +18,7 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(createSubCategoryValidation, createSubCategory)
+  .post(setCategoryIdInBody,createSubCategoryValidation, createSubCategory)
   .get(getSubCategory);
 router
   .route("/:id")

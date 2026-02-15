@@ -41,12 +41,17 @@ exports.getSingleSubCategory = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: subcategory });
 });
 
+
+exports.setCategoryIdInBody=(req,res,next)=>{
+  // nested route
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+}
+
 // @desc                Create new SubCategory
 // @route               POST /api/v1/SubCategory
 // @access              Private/Admin
 exports.createSubCategory = asyncHandler(async (req, res) => {
-
-  if(!req.body.category) req.body.category = req.params.categoryId;
   const { name, category } = req.body;
   const subcategory = await SubCategory.create({
     name,
