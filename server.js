@@ -8,8 +8,9 @@ const morgan = require("morgan");
 const categoryRoute = require("./routes/category.route.js");
 const subCategoryRoute = require("./routes/subCategory.route.js");
 const brandRoute = require('./routes/brand.route.js')
+const productRoute = require('./routes/product.route.js')
 const ApiError = require("./utils/apiErrors.js");
-// Database connection module 
+// Database connection module
 const dbConnnection = require("./config/database");
 
 // Import global error handling middleware
@@ -29,12 +30,11 @@ if (process.env.NODE_ENV === "development") {
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-
-
 // routes
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/subcategory", subCategoryRoute);
 app.use("/api/v1/brand", brandRoute);
+app.use("/api/v1/product", productRoute);
 app.all(/.*/, (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
   next(new ApiError(`Can't find ${req.originalUrl} on this server!`, 400));

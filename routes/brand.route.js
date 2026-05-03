@@ -8,7 +8,7 @@ const {
   createBrandValidator,
   updateBrandValidator,
   deleteBrandValidator,
-} = require("../utils/validators/brandValidator");
+} = require("../utils/validators/brand.validator");
 
 const router = express.Router();
 

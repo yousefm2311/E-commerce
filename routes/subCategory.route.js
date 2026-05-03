@@ -12,7 +12,7 @@ const {
   getSingleSubCategoryValidation,
   updateSingleSubCategoryValidation,
   deleteSingleSubCategoryValidation,
-} = require("../utils/validators/subCategoryValidator");
+} = require("../utils/validators/subcategory.validator");
 
 const router = express.Router({ mergeParams: true });
 
