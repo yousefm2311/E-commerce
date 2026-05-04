@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel.js");
+const SubCategory = require("../../models/subCategoryModel.js");
 
 exports.createProductValidator = [
   check("title")
@@ -63,7 +64,37 @@ exports.createProductValidator = [
         }
       }),
     ),
-  check("subcategory").optional().isMongoId().withMessage("Invalid ID formate"),
+  check("subcategories")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid ID formate")
+    .custom((subcategoryId) =>
+      SubCategory.find({ _id: { $exists: true, $in: subcategoryId } }).then(
+        (subcategory) => {
+          if (
+            subcategory.length < 1 ||
+            subcategory.length !== subcategoryId.length
+          ) {
+            return Promise.reject(
+              new Error(`No subcategory for this id ${subcategoryId}`),
+            );
+          }
+        },
+      ),
+    )
+    .custom((val, { req }) =>
+      SubCategory.find({ category: req.body.category }).then(
+        (subcategories) => {
+          const subCategoriesIdsDB = [];
+          subcategories.forEach((subCategory)=>{
+            subCategoriesIdsDB.push(subCategory._id.toString());
+          });
+          if(!val.every((v)=> subCategoriesIdsDB.includes(v))){
+            return Promise.reject(new Error(`SubCategory not belong to category`))
+          }
+        },
+      ),
+    ),
   check("brand").optional().isMongoId().withMessage("Invalid ID formate"),
   check("ratingsAverage")
     .optional()

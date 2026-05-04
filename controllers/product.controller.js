@@ -13,7 +13,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     .find({})
     .skip(skip)
     .limit(limit)
-    .populate({ path: "category", select: "name -_id" });
+    .populate({ path: ["category", "subcategories"], select: "name -_id" });
   res.status(200).json({ page: page, result: products.length, data: products });
 });
 
