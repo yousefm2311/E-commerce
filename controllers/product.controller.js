@@ -6,14 +6,25 @@ const productModel = require("../models/productModel");
 // @route               GET /api/v1/products
 // @access              Public
 exports.getProducts = asyncHandler(async (req, res) => {
+  // 1) Filtring
+  const queryStringObj = { ...req.query };
+  const excludesFields = ["limit", "sort", "page", "fields"];
+  excludesFields.forEach((filed) => delete queryStringObj[filed]);
+
+  // 2) Pagination
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
-  const products = await productModel
-    .find({})
+
+  // Build query
+  const mongooseQuery = productModel
+    .find(queryStringObj)
     .skip(skip)
     .limit(limit)
     .populate({ path: ["category", "subcategories"], select: "name -_id" });
+
+  // Execute query
+  const products = await mongooseQuery;
   res.status(200).json({ page: page, result: products.length, data: products });
 });
 
@@ -37,7 +48,7 @@ exports.getSingleProduct = asyncHandler(async (req, res, next) => {
 exports.createProduct = asyncHandler(async (req, res) => {
   req.body.slug = slugify(req.body.title);
 
-  req.body.category
+  req.body.category;
   const product = await productModel.create(req.body);
   res.status(201).json({ data: product });
 });
@@ -47,7 +58,7 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // @access             Private/Admin
 exports.updateProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  if(req.body.title){
+  if (req.body.title) {
     req.body.slug = slugify(req.body.title);
   }
   const product = await productModel.findByIdAndUpdate({ _id: id }, req.body, {
