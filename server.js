@@ -22,6 +22,8 @@ dbConnnection();
 
 /// Express app setup
 const app = express();
+app.set("query parser", "extended");
+
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode is ${process.env.NODE_ENV}`);

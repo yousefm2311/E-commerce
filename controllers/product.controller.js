@@ -8,14 +8,14 @@ const productModel = require("../models/productModel");
 exports.getProducts = asyncHandler(async (req, res) => {
   // 1) Filtring
   const queryStringObj = { ...req.query };
-  const excludesFields = ["limit", "sort", "page", "fields"];
-  excludesFields.forEach((filed) => delete queryStringObj[filed]);
+const excludedFields = ["limit", "sort", "page", "fields"];
+excludedFields.forEach((field) => delete queryStringObj[field]);
 
 
   // Replace gte => $gte
   let queryStr= JSON.stringify(queryStringObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g,(match) => `$${match}`)
-
+console.log(JSON.parse(queryStr));
   // 2) Pagination
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 50;
@@ -31,6 +31,8 @@ exports.getProducts = asyncHandler(async (req, res) => {
   if(req.query.sort){
     const sortBy = req.query.sort.split(',').join(' ');
     mongooseQuery = mongooseQuery.sort(sortBy);
+  }else{
+    mongooseQuery = mongooseQuery.sort('-createdAt');
   }
 
   // Execute query
