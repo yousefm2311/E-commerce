@@ -11,14 +11,19 @@ exports.getProducts = asyncHandler(async (req, res) => {
   const excludesFields = ["limit", "sort", "page", "fields"];
   excludesFields.forEach((filed) => delete queryStringObj[filed]);
 
+
+  // Replace gte => $gte
+  let queryStr= JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g,(match) => `$${match}`)
+
   // 2) Pagination
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
+  const limit = parseInt(req.query.limit, 10) || 50;
   const skip = (page - 1) * limit;
 
   // Build query
   const mongooseQuery = productModel
-    .find(queryStringObj)
+    .find(JSON.parse(queryStr))
     .skip(skip)
     .limit(limit)
     .populate({ path: ["category", "subcategories"], select: "name -_id" });
