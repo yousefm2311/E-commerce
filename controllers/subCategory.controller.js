@@ -2,26 +2,26 @@ const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiErrors");
 const SubCategory = require("../models/subCategoryModel");
+const ApiFeatures = require("../utils/apiFeatures.js");
 
 // @desc               Get SubCategory
 // @route              GET /api/v1/subcategory
 // @access             Public/User
 exports.getSubCategory = asyncHandler(async (req, res, next) => {
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
-  const skip = (page - 1) * limit;
-
-
-  let filterObject = {};
-  if(req.params.categoryId) filterObject = {category:req.params.categoryId};
-
-  const subcategory = await SubCategory.find(filterObject)
-    .skip(skip)
-    .limit(limit);
-    // .populate({ path: "category", select: "name -_id" });
-  res
-    .status(200)
-    .json({ page: page, result: subcategory.length, data: subcategory });
+  const documentsCounts = await SubCategory.countDocuments();
+  const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
+    .paginate(documentsCounts)
+    .filter()
+    .search()
+    .sort()
+    .limitFields();
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const subcategory = await mongooseQuery;
+  res.status(200).json({
+    result: subcategory.length,
+    paginationResult,
+    data: subcategory,
+  });
 });
 
 // @desc               Get Single SubCategory
@@ -34,19 +34,18 @@ exports.getSingleSubCategory = asyncHandler(async (req, res, next) => {
   const subcategory = await SubCategory.findById(id).populate({
     path: "category",
     select: "name -_id",
-  });;
+  });
   if (!subcategory) {
     return next(new ApiError(`SubCategory not found for id ${id}`, 404));
   }
   res.status(200).json({ data: subcategory });
 });
 
-
-exports.setCategoryIdInBody=(req,res,next)=>{
+exports.setCategoryIdInBody = (req, res, next) => {
   // nested route
   if (!req.body.category) req.body.category = req.params.categoryId;
   next();
-}
+};
 
 // @desc                Create new SubCategory
 // @route               POST /api/v1/SubCategory

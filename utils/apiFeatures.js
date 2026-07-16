@@ -6,7 +6,7 @@ class ApiFeatures {
 
   filter() {
     const queryStringObj = { ...this.queryString };
-    const excludedFields = ["limit", "sort", "page", "fields"];
+    const excludedFields = ["limit", "sort", "page", "fields", "keyword"];
     excludedFields.forEach((field) => delete queryStringObj[field]);
 
     // Replace gte => $gte
@@ -35,15 +35,37 @@ class ApiFeatures {
     return this;
   }
 
-  search() {
+  search(modelName) {
+    console.log("modelName:", modelName);
+    console.log("keyword:", this.queryString.keyword);
+
     if (this.queryString.keyword) {
-      const query = {};
-      query.$or = [
-        { title: { $regex: this.queryString.keyword, $options: "i" } },
-        { description: { $regex: this.queryString.keyword, $options: "i" } },
-      ];
+      let query = {};
+
+      if (modelName === "Products") {
+        console.log("Products branch");
+
+        query.$or = [
+          { title: { $regex: this.queryString.keyword, $options: "i" } },
+          { description: { $regex: this.queryString.keyword, $options: "i" } },
+        ];
+      } else {
+        console.log("Else branch");
+
+        query = {
+          name: {
+            $regex: this.queryString.keyword,
+            $options: "i",
+          },
+        };
+      }
+
+      console.log(query);
+
       this.mongooseQuery = this.mongooseQuery.find(query);
+      console.log(this.mongooseQuery.getQuery());
     }
+
     return this;
   }
 
@@ -51,7 +73,7 @@ class ApiFeatures {
     const page = parseInt(this.queryString.page, 10) || 1;
     const limit = parseInt(this.queryString.limit, 10) || 50;
     const skip = (page - 1) * limit;
-    const endIndex= page * limit;
+    const endIndex = page * limit;
 
     // Pagination result
     const pagination = {};
@@ -59,10 +81,10 @@ class ApiFeatures {
     pagination.limit = limit;
     pagination.numberOfPages = Math.ceil(countDocumants / limit);
 
-    if(endIndex < countDocumants){
+    if (endIndex < countDocumants) {
       pagination.next = page + 1;
     }
-    if(skip > 0){
+    if (skip > 0) {
       pagination.prev = page - 1;
     }
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
