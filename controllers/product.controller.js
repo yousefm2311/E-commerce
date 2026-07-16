@@ -8,14 +8,13 @@ const productModel = require("../models/productModel");
 exports.getProducts = asyncHandler(async (req, res) => {
   // 1) Filtring
   const queryStringObj = { ...req.query };
-const excludedFields = ["limit", "sort", "page", "fields"];
-excludedFields.forEach((field) => delete queryStringObj[field]);
-
+  const excludedFields = ["limit", "sort", "page", "fields"];
+  excludedFields.forEach((field) => delete queryStringObj[field]);
 
   // Replace gte => $gte
-  let queryStr= JSON.stringify(queryStringObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g,(match) => `$${match}`)
-console.log(JSON.parse(queryStr));
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+  console.log(JSON.parse(queryStr));
   // 2) Pagination
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 50;
@@ -28,11 +27,31 @@ console.log(JSON.parse(queryStr));
     .limit(limit)
     .populate({ path: ["category", "subcategories"], select: "name -_id" });
 
-  if(req.query.sort){
-    const sortBy = req.query.sort.split(',').join(' ');
+  // 3) Apply Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
     mongooseQuery = mongooseQuery.sort(sortBy);
-  }else{
-    mongooseQuery = mongooseQuery.sort('-createdAt');
+  } else {
+    mongooseQuery = mongooseQuery.sort("-createdAt");
+  }
+
+  // 4) Fields limiting
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    mongooseQuery = mongooseQuery.select(fields);
+  } else {
+    mongooseQuery = mongooseQuery.select("-__v");
+  }
+
+  // 5) Apply Search Features
+
+  if (req.query.keyword) {
+    const query = {};
+    query.$or = [
+      { title: { $regex: req.query.keyword, $options: "i" } },
+      { description: { $regex: req.query.keyword, $options: "i" } },
+    ];
+    mongooseQuery = mongooseQuery.find(query);
   }
 
   // Execute query
