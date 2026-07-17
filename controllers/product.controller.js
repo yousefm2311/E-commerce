@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiErrors");
 const productModel = require("../models/productModel");
 const ApiFeatures = require("../utils/apiFeatures.js");
+const factory = require('./handlersFactory.js')
 // @desc                Get all products
 // @route               GET /api/v1/products
 // @access              Public
@@ -69,11 +70,4 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @desc               Delete product
 // @route              DELETE /api/v1/products/:id
 // @access             Private/Admin
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await productModel.findByIdAndDelete(id);
-  if (!product) {
-    return next(new ApiError(`Product not found for id ${id}`, 404));
-  }
-  res.status(204).json({ msg: `Product deleted successfully for id ${id}` });
-});
+exports.deleteProduct = factory.deleteOne(productModel);
