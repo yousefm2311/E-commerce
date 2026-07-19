@@ -40,3 +40,25 @@ exports.getOne = (Model) =>
     }
     res.status(200).json({ data: document });
   });
+
+exports.getAll = (Model, searchStr = "") =>
+  asyncHandler(async (req, res) => {
+    let filter = {};
+    if (req.filterObj) {
+      filter = req.filterObj;
+    }
+    const documentsCounts = await Model.countDocuments();
+    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
+      .paginate(documentsCounts)
+      .filter()
+      .search(searchStr)
+      .sort()
+      .limitFields();
+    const { mongooseQuery, paginationResult } = apiFeatures;
+    const documents = await mongooseQuery;
+    res.status(200).json({
+      result: documents.length,
+      paginationResult,
+      data: documents,
+    });
+  });

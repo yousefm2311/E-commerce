@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel.js");
+const { default: slugify } = require("slugify");
 exports.createSubCategoryValidation = [
   check("name")
     .notEmpty()
@@ -27,7 +28,6 @@ exports.createSubCategoryValidation = [
         }
       }),
     ),
-
   validatorMiddleware,
 ];
 

@@ -1,42 +1,29 @@
-const slugify = require("slugify");
-const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiErrors");
-const SubCategory = require("../models/subCategoryModel");
-const ApiFeatures = require("../utils/apiFeatures.js");
 const factory = require('./handlersFactory.js');
 const subCategoryModel = require("../models/subCategoryModel");
 
-// @desc               Get SubCategory
-// @route              GET /api/v1/subcategory
-// @access             Public/User
-exports.getSubCategory = asyncHandler(async (req, res, next) => {
-  const documentsCounts = await SubCategory.countDocuments();
-  const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
-    .paginate(documentsCounts)
-    .filter()
-    .search()
-    .sort()
-    .limitFields();
-  const { mongooseQuery, paginationResult } = apiFeatures;
-  const subcategory = await mongooseQuery;
-  res.status(200).json({
-    result: subcategory.length,
-    paginationResult,
-    data: subcategory,
-  });
-});
-
-// @desc               Get Single SubCategory
-// @route              GET /api/v1/subcategory
-// @access             Public/User
-
-exports.getSingleSubCategory = factory.getOne(subCategoryModel);
 
 exports.setCategoryIdInBody = (req, res, next) => {
   // nested route
   if (!req.body.category) req.body.category = req.params.categoryId;
   next();
 };
+exports.createFilterObj = (req, res, next) => {
+  let filterObject = {};
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+  req.filterObj = filterObject;
+  next();
+};
+
+// @desc               Get SubCategory
+// @route              GET /api/v1/subcategory
+// @access             Public/User
+exports.getSubCategory = factory.getAll(subCategoryModel,"SubCategory");
+
+// @desc               Get Single SubCategory
+// @route              GET /api/v1/subcategory
+// @access             Public/User
+
+exports.getSingleSubCategory = factory.getOne(subCategoryModel);
 
 // @desc                Create new SubCategory
 // @route               POST /api/v1/SubCategory
