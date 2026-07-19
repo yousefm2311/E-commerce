@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel.js");
 const SubCategory = require("../../models/subCategoryModel.js");
+const { default: slugify } = require("slugify");
 
 exports.createProductValidator = [
   check("title")
@@ -86,11 +87,13 @@ exports.createProductValidator = [
       SubCategory.find({ category: req.body.category }).then(
         (subcategories) => {
           const subCategoriesIdsDB = [];
-          subcategories.forEach((subCategory)=>{
+          subcategories.forEach((subCategory) => {
             subCategoriesIdsDB.push(subCategory._id.toString());
           });
-          if(!val.every((v)=> subCategoriesIdsDB.includes(v))){
-            return Promise.reject(new Error(`SubCategory not belong to category`))
+          if (!val.every((v) => subCategoriesIdsDB.includes(v))) {
+            return Promise.reject(
+              new Error(`SubCategory not belong to category`),
+            );
           }
         },
       ),
@@ -114,6 +117,12 @@ exports.getSingleProductValidator = [
 
 exports.updateProductValidator = [
   check("id").isMongoId().withMessage("Invalid ID formate"),
+  check("title")
+    .optional()
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validatorMiddleware,
 ];
 exports.deleteProductValidator = [

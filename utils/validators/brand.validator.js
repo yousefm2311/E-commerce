@@ -25,14 +25,13 @@ exports.updateBrandValidator = [
     .withMessage("Brand name must be at least 3 characters")
     .isLength({ max: 32 })
     .withMessage("Brand name must be at most 32 characters"),
+  check("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
   validatorMiddleware,
 ];
 exports.deleteBrandValidator = [
   check("id").isMongoId().withMessage("Invalid Brand ID format "),
-
-  body('name').custom((val,{req})=>{
-    req.body.slug = slugify(val);
-    return true;
-  }),
   validatorMiddleware,
 ];

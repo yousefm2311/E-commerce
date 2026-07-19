@@ -14,14 +14,14 @@ exports.createSubCategoryValidation = [
     .withMessage("Invalid Category ID format ")
     .notEmpty()
     .withMessage("SubCategory name is required")
-    .custom((categoryId) => 
+    .custom((categoryId) =>
       Category.findById(categoryId).then((category) => {
         if (!category) {
           return Promise.reject(
             new Error(`No Categroy for this id ${categoryId}`),
           );
         }
-      })
+      }),
     ),
   validatorMiddleware,
 ];
@@ -45,5 +45,9 @@ exports.updateSingleSubCategoryValidation = [
     .withMessage("SubCategory name must be at least 3 characters")
     .isLength({ max: 32 })
     .withMessage("SubCategory name must be at most 32 characters"),
+  check("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
   validatorMiddleware,
 ];

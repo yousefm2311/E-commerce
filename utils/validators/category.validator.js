@@ -25,6 +25,10 @@ exports.updateCategoryValidator = [
     .withMessage("Category name must be at least 3 characters")
     .isLength({ max: 32 })
     .withMessage("Category name must be at most 32 characters"),
+  check("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
   validatorMiddleware,
 ];
 

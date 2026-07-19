@@ -50,19 +50,7 @@ exports.createCategory = asyncHandler(async (req, res) => {
 // @desc               Update category
 // @route              PUT /api/v1/category/:id
 // @access             Private/Admin
-exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const category = await categoryModel.findByIdAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true },
-  );
-  if (!category) {
-    return next(new ApiError(`Category not found for id ${id}`, 404));
-  }
-  res.status(200).json({ data: category });
-});
+exports.updateCategory = factory.updateOne(categoryModel);
 
 // @desc               Delete category
 // @route              DELETE /api/v1/category/:id

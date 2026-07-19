@@ -1,7 +1,8 @@
 const slugify = require("slugify");
 const brandModel = require("../models/brandModel");
-const factory = require('./handlersFactory.js')
+const factory = require("./handlersFactory.js");
 const asyncHandler = require("express-async-handler");
+const ApiFeatures = require("../utils/apiFeatures.js");
 // @desc                Get all brands
 // @route               GET /api/v1/brand
 // @access              Public
@@ -46,19 +47,7 @@ exports.createBrand = asyncHandler(async (req, res) => {
 // @desc               Update brand
 // @route              PUT /api/v1/brand/:id
 // @access             Private/Admin
-exports.updateBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const brand = await brandModel.findByIdAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true },
-  );
-  if (!brand) {
-    return next(new ApiError(`Brand not found for id ${id}`, 404));
-  }
-  res.status(200).json({ data: brand });
-});
+exports.updateBrand = factory.updateOne(brandModel);
 
 // @desc               Delete brand
 // @route              DELETE /api/v1/brand/:id

@@ -65,26 +65,7 @@ exports.createSubCategory = asyncHandler(async (req, res) => {
 // @desc                  Update SubCategory
 // @route                 PUT /api/v1/subcategory
 // @access                Private/Admin
-exports.updateSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name, category } = req.body;
-
-  const subcategory = await SubCategory.findByIdAndUpdate(
-    { _id: id },
-    {
-      name,
-      slug: slugify(name),
-      category,
-    },
-    { new: true },
-  );
-  if (!subcategory) {
-    return next(new ApiError(`SubCategory not found for id ${id}`, 404));
-  }
-  res.status(200).json({
-    data: subcategory,
-  });
-});
+exports.updateSubCategory = factory.updateOne(subCategoryModel);
 
 // @desc                 Delete SubCategory
 // @route                DELETE /api/v1/subcategory
