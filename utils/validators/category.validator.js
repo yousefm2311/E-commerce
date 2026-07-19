@@ -13,7 +13,11 @@ exports.createCategoryValidator = [
     .isLength({ min: 3 })
     .withMessage("Category name must be at least 3 characters")
     .isLength({ max: 32 })
-    .withMessage("Category name must be at most 32 characters"),
+    .withMessage("Category name must be at most 32 characters")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validatorMiddleware,
 ];
 exports.updateCategoryValidator = [

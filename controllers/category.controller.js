@@ -41,11 +41,7 @@ exports.getSingleCategory = asyncHandler(async (req, res, next) => {
 // @desc                Create new category
 // @route               POST /api/v1/category
 // @access              Private/Admin
-exports.createCategory = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-  const category = await categoryModel.create({ name, slug: slugify(name) });
-  res.status(201).json({ data: category });
-});
+exports.createCategory = factory.createOne(categoryModel);
 
 // @desc               Update category
 // @route              PUT /api/v1/category/:id

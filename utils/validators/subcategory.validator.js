@@ -8,7 +8,11 @@ exports.createSubCategoryValidation = [
     .isLength({ min: 2 })
     .withMessage("SubCategory name must be at least 3 characters")
     .isLength({ max: 32 })
-    .withMessage("SubCategory name must be at most 32 characters"),
+    .withMessage("SubCategory name must be at most 32 characters")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   check("category")
     .isMongoId()
     .withMessage("Invalid Category ID format ")
@@ -23,6 +27,7 @@ exports.createSubCategoryValidation = [
         }
       }),
     ),
+
   validatorMiddleware,
 ];
 
