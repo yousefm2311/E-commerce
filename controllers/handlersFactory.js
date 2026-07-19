@@ -27,6 +27,16 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   asyncHandler(async (req, res) => {
-    const document = await Model.create(req.body);
-    res.status(201).json({ data: document });
+    const newDoc = await Model.create(req.body);
+    res.status(201).json({ data: newDoc });
+  });
+
+exports.getOne = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const document = await Model.findById(id);
+    if (!document) {
+      return next(new ApiError(`Document not found for id ${id}`, 404));
+    }
+    res.status(200).json({ data: document });
   });

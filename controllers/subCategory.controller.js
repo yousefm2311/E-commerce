@@ -30,18 +30,7 @@ exports.getSubCategory = asyncHandler(async (req, res, next) => {
 // @route              GET /api/v1/subcategory
 // @access             Public/User
 
-exports.getSingleSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const subcategory = await SubCategory.findById(id).populate({
-    path: "category",
-    select: "name -_id",
-  });
-  if (!subcategory) {
-    return next(new ApiError(`SubCategory not found for id ${id}`, 404));
-  }
-  res.status(200).json({ data: subcategory });
-});
+exports.getSingleSubCategory = factory.getOne(subCategoryModel);
 
 exports.setCategoryIdInBody = (req, res, next) => {
   // nested route
