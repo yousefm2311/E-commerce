@@ -1,5 +1,23 @@
 const categoryModel = require("../models/categoryModel");
-const factory = require('./handlersFactory.js')
+const factory = require('./handlersFactory.js');
+const multer = require("multer");
+const {v4:uuidv4} = require('uuid');
+
+// disk storage middleware
+const multerStorage = multer.diskStorage({
+    destination: function(req,file,cb){
+        cb(null,'uploads/categories');
+    },
+    filename: function(req,file,cb){
+        const ext = file.mimetype.split('/')[1];
+        const fileName = `category-${uuidv4()}-${Date.now()}.${ext}`;
+        cb(null,fileName);
+    }
+});
+
+const upload = multer({ storage: multerStorage });
+
+exports.updateCategoryImage = upload.single("image")
 // @desc                Get all categories
 // @route               GET /api/v1/category
 // @access              Public
