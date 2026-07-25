@@ -2,6 +2,7 @@
 const express = require("express");
 // Load environment variables from .env file
 const dotenv = require("dotenv");
+const path = require('path')
 // HTTP request logger middleware
 const morgan = require("morgan");
 // Import routes and database connection
@@ -22,6 +23,7 @@ dbConnnection();
 
 /// Express app setup
 const app = express();
+app.use(express.static(path.join(__dirname,'uploads')))
 app.set("query parser", "extended");
 
 if (process.env.NODE_ENV === "development") {
