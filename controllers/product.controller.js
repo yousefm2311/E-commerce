@@ -4,22 +4,14 @@ const factory = require("./handlersFactory.js");
 const multer = require("multer");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
-const multerStorage = multer.memoryStorage();
 const asyncHandler = require("express-async-handler");
+const {uploadMixOfImages} = require('../middlewares/uploadImageMiddleware.js')
 
-const multerFilter = function (req, file, cb) {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new ApiError("Onlys Image allowed", 400), false);
-  }
-};
 
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-exports.uploadProductImages = upload.fields([
+exports.uploadProductImages = uploadMixOfImages([
   { name: "imageCover", maxCount: 1 },
-  { name: "images", maxCount: "5" },
+  { name: "images", maxCount: 5 },
 ]);
 
 exports.resizeProductImages = asyncHandler(async (req, res, next) => {
