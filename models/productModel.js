@@ -74,6 +74,20 @@ productSchema.pre(/^find/,function(){
     path: 'category',
     select: 'name'
   });
-})
+});
+
+productSchema.post("init", (doc) => {
+  if (doc.imageCover) {
+    const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+    doc.imageCover = imageUrl;
+  }if(doc.images){
+    const imageList =[];
+    doc.images.forEach((img) =>{
+      const imageUrl = `${process.env.BASE_URL}/products/${img}`;
+      imageList.push(imageUrl);
+    })
+    doc.images = imageList;;
+  }
+});
 
 module.exports = mongoose.model('Product',productSchema);
