@@ -11,7 +11,7 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
-  updateCategoryImage,
+  uploadCategoryImage,
   resizeImage,
 } = require("../controllers/category.controller");
 
@@ -25,7 +25,7 @@ router
   .route("/")
   .get(getCategory)
   .post(
-    updateCategoryImage,
+    uploadCategoryImage,
     resizeImage,
     createCategoryValidator,
     createCategory,
@@ -34,7 +34,7 @@ router
   .route("/:id")
   .get(getCategoryValidator, getSingleCategory)
   .put(
-    updateCategoryImage,
+    uploadCategoryImage,
     resizeImage,
     updateCategoryValidator,
     updateCategory,

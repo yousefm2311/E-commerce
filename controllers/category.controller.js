@@ -5,34 +5,13 @@ const factory = require("./handlersFactory.js");
 const multer = require("multer");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
+const {
+  uploadSingleImage,
+} = require("../middlewares/uploadImageMiddleware.js");
 
-// disk storage middleware
-// const multerStorage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads/categories");
-//   },
-//   filename: function (req, file, cb) {
-//     const ext = file.mimetype.split("/")[1];
-//     const fileName = `category-${uuidv4()}-${Date.now()}.${ext}`;
-//     cb(null, fileName);
-//   },
-// });
-
-// Memory Storage
-const multerStorage = multer.memoryStorage();
-
-const multerFilter = function (req, file, cb) {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new ApiError("Onlys Image allowed", 400), false);
-  }
-};
-
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-
-exports.updateCategoryImage = upload.single("image");
-
+// upload single image using memory storage
+exports.uploadCategoryImage = uploadSingleImage("image");
+// image proccess
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
   await sharp(req.file.buffer)
@@ -40,7 +19,6 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
     .toFile(`uploads/categories/${fileName}`);
-
   req.body.image = fileName;
   next();
 });
