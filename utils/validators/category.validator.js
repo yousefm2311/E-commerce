@@ -18,13 +18,13 @@ exports.createCategoryValidator = [
       req.body.slug = slugify(val);
       return true;
     }),
+  check("image").notEmpty().withMessage("Category image is required"),
   validatorMiddleware,
 ];
 exports.updateCategoryValidator = [
   check("id").isMongoId().withMessage("Invalid Category ID format "),
   check("name")
-    .notEmpty()
-    .withMessage("Category name is required")
+    .optional()
     .isLength({ min: 3 })
     .withMessage("Category name must be at least 3 characters")
     .isLength({ max: 32 })

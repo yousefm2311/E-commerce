@@ -18,13 +18,13 @@ exports.createBrandValidator = [
       req.body.slug = slugify(val);
       return true;
     }),
+  check("image").notEmpty().withMessage("Brand image is required"),
   validatorMiddleware,
 ];
 exports.updateBrandValidator = [
   check("id").isMongoId().withMessage("Invalid Category ID format "),
   check("name")
-    .notEmpty()
-    .withMessage("Brand name is required")
+    .optional()
     .isLength({ min: 3 })
     .withMessage("Brand name must be at least 3 characters")
     .isLength({ max: 32 })
