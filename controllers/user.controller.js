@@ -47,4 +47,22 @@ exports.updateUser = factory.updateOne(userModel);
 // @desc               Delete user
 // @route              DELETE /api/v1/user/:id
 // @access             Private/Admin
-exports.deleteUser = factory.deleteOne(userModel);
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.params.id);
+
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
+
+  const updatedUser = await userModel.findByIdAndUpdate(
+    req.params.id,
+    { active: !user.active },
+    { new: true },
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "User active status changed successfully",
+    data: updatedUser,
+  });
+});

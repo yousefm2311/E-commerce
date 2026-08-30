@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+userSchema.post("init", (doc) => {
+  if (doc.profileImg) {
+    const profileImgUrl = `${process.env.BASE_URL}/users/${doc.profileImg}`;
+    doc.profileImg = profileImgUrl;
+  }
+});
+
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
