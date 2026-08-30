@@ -10,20 +10,20 @@ const {
   resizeImage,
 } = require("../controllers/user.controller.js");
 
-// const {
-//   getBrandValidator,
-//   createBrandValidator,
-//   updateBrandValidator,
-//   deleteBrandValidator,
-// } = require("../utils/validators/brand.validator");
+const {
+  getUserValidator,
+  createUserValidator,
+  updateUserValidator,
+  deleteUserValidator,
+} = require("../utils/validators/user.validator");
 
 const router = express.Router();
 
-router.route("/").get(getUsers).post(uploadUserImage, resizeImage, createUser);
+router.route("/").get(getUsers).post(uploadUserImage, resizeImage,createUserValidator, createUser);
 router
   .route("/:id")
-  .get(getSingleUser)
-  .put(uploadUserImage, resizeImage, updateUser)
-  .delete(deleteUser);
+  .get(getUserValidator,getSingleUser)
+  .put(uploadUserImage, resizeImage,updateUserValidator, updateUser)
+  .delete(deleteUserValidator,deleteUser);
 
 module.exports = router;
