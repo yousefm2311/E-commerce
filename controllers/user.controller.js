@@ -8,40 +8,40 @@ const {
 } = require("../middlewares/uploadImageMiddleware.js");
 
 // upload single image using memory storage
-exports.uploadBrandImage = uploadSingleImage("image");
+exports.uploadUserImage = uploadSingleImage("profileImg");
 // image proccess
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const fileName = `brand-${uuidv4()}-${Date.now()}.jpeg`;
+  const fileName = `user-${uuidv4()}-${Date.now()}.jpeg`;
   await sharp(req.file.buffer)
     .resize(600, 600)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
-    .toFile(`uploads/brands/${fileName}`);
-  req.body.image = fileName;
+    .toFile(`uploads/users/${fileName}`);
+  req.body.profileImg = fileName;
   next();
 });
 
-// @desc                Get all brands
-// @route               GET /api/v1/brand
-// @access              Public
-exports.getBrands = factory.getAll(brandModel, "Brand");
+// @desc                Get all users
+// @route               GET /api/v1/users
+// @access              Privte
+exports.getUsers = factory.getAll(userModel, "User");
 
-// @desc                Get single brand
-// @route               GET /api/v1/brand/:id
-// @access              Public
-exports.getSingleBrand = factory.getOne(brandModel);
+// @desc                Get single user
+// @route               GET /api/v1/users/:id
+// @access              Privte
+exports.getSingleUser = factory.getOne(userModel);
 
-// @desc                Create new brand
-// @route               POST /api/v1/brand
+// @desc                Create new user
+// @route               POST /api/v1/user
 // @access              Private/Admin
 exports.createUser = factory.createOne(userModel);
 
-// @desc               Update brand
-// @route              PUT /api/v1/brand/:id
+// @desc               Update user
+// @route              PUT /api/v1/user/:id
 // @access             Private/Admin
-exports.updateBrand = factory.updateOne(userModel);
+exports.updateUser = factory.updateOne(userModel);
 
-// @desc               Delete brand
-// @route              DELETE /api/v1/brand/:id
+// @desc               Delete user
+// @route              DELETE /api/v1/user/:id
 // @access             Private/Admin
-exports.deleteBrand = factory.deleteOne(userModel);
+exports.deleteUser = factory.deleteOne(userModel);
