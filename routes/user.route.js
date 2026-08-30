@@ -19,14 +19,11 @@ const {
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(getUsers)
-  .post(uploadUserImage, resizeImage, createUser);
+router.route("/").get(getUsers).post(uploadUserImage, resizeImage, createUser);
 router
   .route("/:id")
-  .get( getSingleUser)
+  .get(getSingleUser)
   .put(uploadUserImage, resizeImage, updateUser)
-  .delete( deleteUser);
+  .delete(deleteUser);
 
 module.exports = router;
