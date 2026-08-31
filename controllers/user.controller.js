@@ -1,7 +1,9 @@
 const { v4: uuidv4 } = require("uuid");
+const ApiError = require("../utils/apiErrors");
 const userModel = require("../models/userModel.js");
 const factory = require("./handlersFactory.js");
 const sharp = require("sharp");
+const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const {
   uploadSingleImage,
@@ -42,8 +44,39 @@ exports.createUser = factory.createOne(userModel);
 // @desc               Update user
 // @route              PUT /api/v1/user/:id
 // @access             Private/Admin
-exports.updateUser = factory.updateOne(userModel);
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const document = await userModel.findByIdAndUpdate(req.params.id,{
+    name: req.body.name,
+    slug: req.body.slug,
+    phone:req.body.phone,
+    email:req.body.email,
+    profileImg: req.body.profileImg,
+    role:req.body.role,
+  }, {
+    new: true,
+  });
+  if (!document) {
+    return next(new ApiError(` Not Document found for id ${id}`, 404));
+  }
+  res.status(200).json({ data: document });
+});
 
+
+exports.changeUserPassword = asyncHandler(async (req, res, next) => {
+  const document = await userModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      password: await bcrypt.hash(req.body.password),
+    },
+    {
+      new: true,
+    },
+  );
+  if (!document) {
+    return next(new ApiError(` Not Document found for id ${id}`, 404));
+  }
+  res.status(200).json({ data: document });
+});
 // @desc               Delete user
 // @route              DELETE /api/v1/user/:id
 // @access             Private/Admin

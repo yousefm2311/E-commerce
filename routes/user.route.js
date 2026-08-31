@@ -8,6 +8,7 @@ const {
   deleteUser,
   uploadUserImage,
   resizeImage,
+  changeUserPassword,
 } = require("../controllers/user.controller.js");
 
 const {
@@ -19,6 +20,7 @@ const {
 
 const router = express.Router();
 
+router.put('/changePassword/:id',changeUserPassword)
 router.route("/").get(getUsers).post(uploadUserImage, resizeImage,createUserValidator, createUser);
 router
   .route("/:id")
