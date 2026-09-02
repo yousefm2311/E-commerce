@@ -14,7 +14,7 @@ const {
   uploadCategoryImage,
   resizeImage,
 } = require("../controllers/category.controller");
-
+const AuthServices = require("../controllers/auth.controller.js");
 const subCategoryRoute = require("./subCategory.route");
 
 const router = express.Router();
@@ -25,6 +25,7 @@ router
   .route("/")
   .get(getCategory)
   .post(
+    AuthServices.protect,
     uploadCategoryImage,
     resizeImage,
     createCategoryValidator,
