@@ -66,7 +66,7 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   const document = await userModel.findByIdAndUpdate(
     req.params.id,
     {
-      password: await bcrypt.hash(req.body.password),
+      password: await bcrypt.hash(req.body.password,12),
     },
     {
       new: true,
@@ -77,6 +77,8 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ data: document });
 });
+
+
 // @desc               Delete user
 // @route              DELETE /api/v1/user/:id
 // @access             Private/Admin
