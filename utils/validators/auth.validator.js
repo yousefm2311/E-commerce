@@ -2,7 +2,6 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware.js");
 const { default: slugify } = require("slugify");
 const User = require("../../models/userModel.js");
-const bcrypt = require("bcryptjs");
 
 exports.signUpValidator = [
   check("name")
@@ -45,3 +44,17 @@ exports.signUpValidator = [
   validatorMiddleware,
 ];
 
+exports.loginValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email required")
+    .isEmail()
+    .withMessage("Invalid Email address"),
+  check("password")
+    .notEmpty()
+    .withMessage("Password required")
+    .isLength({ min: 6 })
+    .withMessage("User password must be at least 6 characters"),
+
+  validatorMiddleware,
+];
