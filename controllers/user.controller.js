@@ -74,7 +74,9 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
     },
   );
   if (!document) {
-    return next(new ApiError(` Not Document found for id ${id}`, 404));
+    return next(
+      new ApiError(` Not Document found for id ${req.params.id}`, 404),
+    );
   }
   res.status(200).json({ data: document });
 });

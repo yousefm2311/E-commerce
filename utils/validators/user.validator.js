@@ -108,7 +108,7 @@ exports.changeUserPasswordValidator = [
     .notEmpty()
     .withMessage("You must enter the password confirm")
     .custom(async (val, { req }) => {
-      const user = User.findById(req.params.id);
+      const user =await User.findById(req.params.id);
       if (!user) {
         throw new Error("There is no user for this id");
       }
