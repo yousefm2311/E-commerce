@@ -14,16 +14,32 @@ const {
   updateSingleSubCategoryValidation,
   deleteSingleSubCategoryValidation,
 } = require("../utils/validators/subcategory.validator");
-
+const authServices = require("../controllers/auth.controller.js");
 const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(setCategoryIdInBody, createSubCategoryValidation, createSubCategory)
-  .get(createFilterObj,getSubCategory);
+  .post(
+    authServices.protect,
+    authServices.allowedTo("admin", "manager"),
+    setCategoryIdInBody,
+    createSubCategoryValidation,
+    createSubCategory,
+  )
+  .get(createFilterObj, getSubCategory);
 router
   .route("/:id")
   .get(getSingleSubCategoryValidation, getSingleSubCategory)
-  .put(updateSingleSubCategoryValidation, updateSubCategory)
-  .delete(deleteSingleSubCategoryValidation, deleteSubCategory);
+  .put(
+    authServices.protect,
+    authServices.allowedTo("admin", "manager"),
+    updateSingleSubCategoryValidation,
+    updateSubCategory,
+  )
+  .delete(
+    authServices.protect,
+    authServices.allowedTo("admin"),
+    deleteSingleSubCategoryValidation,
+    deleteSubCategory,
+  );
 module.exports = router;

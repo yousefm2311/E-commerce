@@ -14,13 +14,15 @@ const {
   uploadProductImages,
   resizeProductImages,
 } = require("../controllers/product.controller.js");
-
+const authServices = require("../controllers/auth.controller.js");
 const router = express.Router();
 
 router
   .route("/")
   .get(getProducts)
   .post(
+    authServices.protect,
+    authServices.allowedTo("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     createProductValidator,
@@ -30,10 +32,17 @@ router
   .route("/:id")
   .get(getSingleProductValidator, getSingleProduct)
   .put(
+    authServices.protect,
+    authServices.allowedTo("admin", "manager"),
     uploadProductImages,
     resizeProductImages,
     updateProductValidator,
     updateProduct,
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(
+    authServices.protect,
+    authServices.allowedTo("admin"),
+    deleteProductValidator,
+    deleteProduct,
+  );
 module.exports = router;
