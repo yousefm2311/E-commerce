@@ -96,3 +96,20 @@ exports.allowedTo = (...roles) =>
     }
     next();
   });
+
+
+
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+
+
+  // 1) Get user by email
+
+  const user = await userModel.findOne({email:req.body.email});
+  if(!user){
+    return next(new ApiError(`There is no user with that email ${req.body.email}`));
+  }
+
+  // 2) If user exist, Generate reset random 6 disgits and save it in db
+
+  // 3) Send the rest code via email
+});
