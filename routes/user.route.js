@@ -11,7 +11,7 @@ const {
   changeUserPassword,
   getLoggedUser,
   updateLoggerUserPassword,
-  updateLoggedUserData
+  updateLoggedUserData,deleteLoggedDate
 } = require("../controllers/user.controller.js");
 
 const {
@@ -32,11 +32,13 @@ router.put(
   updateUserLoggedValidator,
   updateLoggedUserData,
 );
-router.put(
-  "/changeMyPassword",
+router.delete(
+  "/changeActiveMe",
   authServices.protect,
-  updateLoggerUserPassword,
+  deleteLoggedDate,
 );
+router.put("/changeMyPassword", authServices.protect, updateLoggerUserPassword);
+
 
 // Admin Route
 router.put(

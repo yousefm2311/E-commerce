@@ -27,6 +27,10 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const token = createToken(user._id);
+  if(!user.active){
+    user.active = true;
+    await user.save();
+  }
 
   res.status(200).json({ data: user, token });
 });
@@ -78,6 +82,15 @@ exports.protect = asyncHandler(async (req, res, next) => {
         ),
       );
     }
+  }
+
+  if(currentUser.active ===false){
+    return next(
+      new ApiError(
+        "User account is no active please reactive account and try again......",
+        401,
+      ),
+    );
   }
   req.user = currentUser;
   next();

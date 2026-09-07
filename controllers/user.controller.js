@@ -142,8 +142,14 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
     },
     { new: true },
   );
-  if(!req.body.email){
+  if (!req.body.email) {
     req.body.email = req.user.email;
   }
   res.status(200).json({ data: updateUser });
+});
+
+exports.deleteLoggedDate = asyncHandler(async (req, res, next) => {
+  await userModel.findByIdAndUpdate(req.user._id, { active: !req.user.active });
+
+  res.status(204).json({ status: "Success" });
 });
