@@ -91,6 +91,40 @@ exports.updateUserValidator = [
   check("role").optional(),
   validatorMiddleware,
 ];
+
+
+exports.updateUserLoggedValidator = [
+  check("name")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("User name must be at least 3 characters")
+    .isLength({ max: 32 })
+    .withMessage("User name must be at most 32 characters"),
+  check("name").custom((val, { req }) => {
+    req.body.slug = slugify(val);
+    return true;
+  }),
+  check("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid Email address")
+    .custom((val) =>
+      User.findOne({ email: val }).then((user) => {
+        if (user) {
+          return Promise.reject(new Error("Email already exists"));
+        }
+      }),
+    ),
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Invalid phone number only accepted EGY and SA Phone number"),
+
+  check("profileImg").optional(),
+  validatorMiddleware,
+];
+
+
 exports.deleteUserValidator = [
   check("id").isMongoId().withMessage("Invalid Brand ID format "),
   validatorMiddleware,

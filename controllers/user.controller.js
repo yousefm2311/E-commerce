@@ -9,6 +9,7 @@ const createToken = require("../utils/createToken.js");
 const {
   uploadSingleImage,
 } = require("../middlewares/uploadImageMiddleware.js");
+const User = require("../models/userModel.js");
 
 // upload single image using memory storage
 exports.uploadUserImage = uploadSingleImage("profileImg");
@@ -129,4 +130,20 @@ exports.updateLoggerUserPassword = asyncHandler(async (req, res, next) => {
     token,
     data: user,
   });
+});
+
+exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+  const updateUser = await userModel.findByIdAndUpdate(
+    req.user._id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+    },
+    { new: true },
+  );
+  if(!req.body.email){
+    req.body.email = req.user.email;
+  }
+  res.status(200).json({ data: updateUser });
 });

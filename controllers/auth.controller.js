@@ -50,7 +50,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
 
   // 2) Verify token (no change happens, expired token)
-  const decoder = jwt.verify(token, process.env.JWR_SECRET_KEY);
+  const decoder = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   // 3) Check if user exists
   const currentUser = await userModel.findById(decoder.userId);
@@ -60,7 +60,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
         "The user that belong to this token does no longer exist",
         401,
       ),
-    );Y
+    );    Y;
   }
 
   // 4) Check if user change his password after token created

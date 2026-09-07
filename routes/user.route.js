@@ -11,6 +11,7 @@ const {
   changeUserPassword,
   getLoggedUser,
   updateLoggerUserPassword,
+  updateLoggedUserData
 } = require("../controllers/user.controller.js");
 
 const {
@@ -19,11 +20,18 @@ const {
   updateUserValidator,
   deleteUserValidator,
   changeUserPasswordValidator,
+  updateUserLoggedValidator
 } = require("../utils/validators/user.validator");
 const authServices = require("../controllers/auth.controller.js");
 const router = express.Router();
 
 router.get("/getMe", authServices.protect, getLoggedUser, getSingleUser);
+router.put(
+  "/updateMe",
+  authServices.protect,
+  updateUserLoggedValidator,
+  updateLoggedUserData,
+);
 router.put(
   "/changeMyPassword",
   authServices.protect,
