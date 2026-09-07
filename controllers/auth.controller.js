@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const ApiError = require("../utils/apiErrors");
 const asyncHandler = require("express-async-handler");
 const userModel = require("../models/userModel.js");
@@ -109,7 +110,15 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     return next(new ApiError(`There is no user with that email ${req.body.email}`));
   }
 
-  // 2) If user exist, Generate reset random 6 disgits and save it in db
+  // 2) If user exist, Generate hash reset random 6 disgits and save it in db
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedResetCode = crypto.createHash('sha256').update(resetCode).digest('hex');
 
+  // Save hashedReset Code in db
+  user.passwordResetCode = hashedResetCode;
+  user.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  user.passwordResetVerified = false;
+
+  await user.save();
   // 3) Send the rest code via email
 });
