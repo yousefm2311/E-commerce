@@ -4,7 +4,8 @@ const {
   signup,
   login,
   forgetPassword,
-  verifyPassResetCode
+  verifyPassResetCode,
+  resetPassword
 } = require("../controllers/auth.controller.js");
 
 const {
@@ -19,6 +20,7 @@ router.route("/signup").post(signUpValidator, signup);
 router.route("/login").post(loginValidator, login);
 router.route("/forgetPassword").post(forgetPassword);
 router.route("/verifyPassResetCode").post(verifyPassResetCode);
+router.route("/resetPassword").put(resetPassword);
 
 
 module.exports = router;
