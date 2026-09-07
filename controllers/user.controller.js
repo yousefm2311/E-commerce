@@ -104,3 +104,10 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
     data: updatedUser,
   });
 });
+
+
+
+exports.getLoggedUser = asyncHandler(async (req, res, next) => {
+  req.params.id = req.user._id;
+next();
+});

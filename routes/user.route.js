@@ -9,6 +9,7 @@ const {
   uploadUserImage,
   resizeImage,
   changeUserPassword,
+  getLoggedUser
 } = require("../controllers/user.controller.js");
 
 const {
@@ -21,6 +22,11 @@ const {
 const authServices = require("../controllers/auth.controller.js");
 const router = express.Router();
 
+
+router.get("/getMe",authServices.protect, getLoggedUser, getSingleUser);
+
+
+// Admin Route
 router.put('/changePassword/:id',changeUserPasswordValidator,changeUserPassword)
 router
   .route("/")
