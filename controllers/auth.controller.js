@@ -1,10 +1,10 @@
-const crypto = require('crypto');
+const crypto = require("crypto");
 const ApiError = require("../utils/apiErrors");
 const asyncHandler = require("express-async-handler");
 const userModel = require("../models/userModel.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-
+const sendEmail = require("../utils/sendEmail.js");
 const createToken = (payload) =>
   jwt.sign({ userId: payload }, process.env.JWR_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRE_TIME,
@@ -86,7 +86,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
-
 exports.allowedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     console.log(req.user.roles);
@@ -98,21 +97,22 @@ exports.allowedTo = (...roles) =>
     next();
   });
 
-
-
 exports.forgetPassword = asyncHandler(async (req, res, next) => {
-
-
   // 1) Get user by email
 
-  const user = await userModel.findOne({email:req.body.email});
-  if(!user){
-    return next(new ApiError(`There is no user with that email ${req.body.email}`));
+  const user = await userModel.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      new ApiError(`There is no user with that email ${req.body.email}`, 404),
+    );
   }
 
   // 2) If user exist, Generate hash reset random 6 disgits and save it in db
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-  const hashedResetCode = crypto.createHash('sha256').update(resetCode).digest('hex');
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(resetCode)
+    .digest("hex");
 
   // Save hashedReset Code in db
   user.passwordResetCode = hashedResetCode;
@@ -120,5 +120,28 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
   user.passwordResetVerified = false;
 
   await user.save();
+
+
   // 3) Send the rest code via email
+  const message = `Hi ${user.name} \n We received a request to reset the password on your E-shop Account. \n ${resetCode}`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Your password reset code (valid for 10 min",
+      message: message,
+    });
+  } catch (err) {
+    user.passwordResetCode = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordResetVerified = undefined;
+    await user.save();
+
+    return next(new ApiError(`There is an error in sending email ${err}`, 500));
+  }
+
+  res.status(200).json({
+    status: "Success",
+    message: "Reset code sent to email",
+  });
 });
