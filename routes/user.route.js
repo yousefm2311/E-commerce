@@ -9,7 +9,8 @@ const {
   uploadUserImage,
   resizeImage,
   changeUserPassword,
-  getLoggedUser
+  getLoggedUser,
+  updateLoggerUserPassword,
 } = require("../controllers/user.controller.js");
 
 const {
@@ -22,19 +23,22 @@ const {
 const authServices = require("../controllers/auth.controller.js");
 const router = express.Router();
 
-
-router.get("/getMe",authServices.protect, getLoggedUser, getSingleUser);
-
+router.get("/getMe", authServices.protect, getLoggedUser, getSingleUser);
+router.put(
+  "/changeMyPassword",
+  authServices.protect,
+  updateLoggerUserPassword,
+);
 
 // Admin Route
-router.put('/changePassword/:id',changeUserPasswordValidator,changeUserPassword)
+router.put(
+  "/changePassword/:id",
+  changeUserPasswordValidator,
+  changeUserPassword,
+);
 router
   .route("/")
-  .get(
-    authServices.protect,
-    authServices.allowedTo("admin"),
-    getUsers,
-  )
+  .get(authServices.protect, authServices.allowedTo("admin"), getUsers)
   .post(
     authServices.protect,
     authServices.allowedTo("admin"),

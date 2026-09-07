@@ -5,6 +5,7 @@ const factory = require("./handlersFactory.js");
 const sharp = require("sharp");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
+const createToken = require("../utils/createToken.js");
 const {
   uploadSingleImage,
 } = require("../middlewares/uploadImageMiddleware.js");
@@ -45,22 +46,25 @@ exports.createUser = factory.createOne(userModel);
 // @route              PUT /api/v1/user/:id
 // @access             Private/Admin
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const document = await userModel.findByIdAndUpdate(req.params.id,{
-    name: req.body.name,
-    slug: req.body.slug,
-    phone:req.body.phone,
-    email:req.body.email,
-    profileImg: req.body.profileImg,
-    role:req.body.role,
-  }, {
-    new: true,
-  });
+  const document = await userModel.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      slug: req.body.slug,
+      phone: req.body.phone,
+      email: req.body.email,
+      profileImg: req.body.profileImg,
+      role: req.body.role,
+    },
+    {
+      new: true,
+    },
+  );
   if (!document) {
     return next(new ApiError(` Not Document found for id ${id}`, 404));
   }
   res.status(200).json({ data: document });
 });
-
 
 exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   const document = await userModel.findByIdAndUpdate(
@@ -80,7 +84,6 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ data: document });
 });
-
 
 // @desc               Delete user
 // @route              DELETE /api/v1/user/:id
@@ -105,9 +108,25 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-
-
 exports.getLoggedUser = asyncHandler(async (req, res, next) => {
   req.params.id = req.user._id;
-next();
+  next();
+});
+
+exports.updateLoggerUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findByIdAndUpdate(
+    req.user._id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+      passwordChangedAt: Date.now(),
+    },
+    {
+      new: true,
+    },
+  );
+  const token = createToken(user._id);
+  res.status(200).json({
+    token,
+    data: user,
+  });
 });

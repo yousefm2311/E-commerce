@@ -5,10 +5,7 @@ const userModel = require("../models/userModel.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/sendEmail.js");
-const createToken = (payload) =>
-  jwt.sign({ userId: payload }, process.env.JWR_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRE_TIME,
-  });
+const createToken = require("../utils/createToken.js");
 
 exports.signup = asyncHandler(async (req, res, next) => {
   const user = await userModel.create({
@@ -63,7 +60,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
         "The user that belong to this token does no longer exist",
         401,
       ),
-    );
+    );Y
   }
 
   // 4) Check if user change his password after token created
