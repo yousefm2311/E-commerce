@@ -12,6 +12,7 @@ const brandRoute = require('./routes/brand.route.js')
 const productRoute = require('./routes/product.route.js')
 const userRoute = require('./routes/user.route.js')
 const authRoute = require('./routes/auth.route.js')
+const reviewRoute = require('./routes/review.route.js')
 const ApiError = require("./utils/apiErrors.js");
 // Database connection module
 const dbConnnection = require("./config/database");
@@ -43,6 +44,7 @@ app.use("/api/v1/brand", brandRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/reviews", reviewRoute);
 app.all(/.*/, (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
   next(new ApiError(`Can't find ${req.originalUrl} on this server!`, 400));

@@ -25,19 +25,27 @@ const userSchema = new mongoose.Schema(
       required: [true, "password required"],
       minlength: [6, "Too short password"],
     },
-    passwordChangedAt:Date,
+    passwordChangedAt: Date,
     passwordResetCode: String,
     passwordResetExpires: Date,
-    passwordResetVerified:Boolean,
+    passwordResetVerified: Boolean,
     role: {
       type: String,
-      enum: ["user","manager", "admin"],
+      enum: ["user", "manager", "admin"],
       default: "user",
     },
     active: {
       type: Boolean,
       default: true,
     },
+    // // Embedded Documents Collections
+    // addresses: [
+    //   {
+    //     title: String,
+    //     postalCode: Number,
+    //     street: String,
+    //   },
+    // ],
   },
   { timestamps: true },
 );
